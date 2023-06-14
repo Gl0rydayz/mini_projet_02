@@ -44,4 +44,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_startActivityId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="##"
+        app:layout_constraintBottom_toTopOf="@+id/tv_startActivityQuote"
+        app:layout_constraintEnd_toEndOf="@+id/tv_startActivityQuote"
+        app:layout_constraintStart_toStartOf="@+id/tv_startActivityQuote" />
 </androidx.constraintlayout.widget.ConstraintLayout>

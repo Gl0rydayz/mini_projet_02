@@ -17,8 +17,10 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
-    TextView tv_startActivityQuote, tv_startActivityAuthor;
+    TextView tv_startActivityQuote, tv_startActivityAuthor, tv_startActivityId;
     Button btn_startActivityPass;
 
     @Override
@@ -29,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
         tv_startActivityQuote = findViewById(R.id.tv_startActivityQuote);
         tv_startActivityAuthor = findViewById(R.id.tv_startActivityAuthor);
         btn_startActivityPass = findViewById(R.id.btn_startActivityPass);
+        tv_startActivityId = findViewById(R.id.tv_startActivityId);
+
+        Random random = new Random();
+        int id_25_80 = random.nextInt(56) + 25;
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://dummyjson.com/quotes/random";
+        String url = "https://dummyjson.com/quotes/" + id_25_80;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     tv_startActivityQuote.setText(response.getString("quote"));
                     tv_startActivityAuthor.setText(response.getString("author"));
+                    tv_startActivityId.setText("#"+ response.getString("id"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -58,4 +65,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
 }
