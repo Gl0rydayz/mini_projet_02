@@ -2,9 +2,13 @@ package com.example.mini_projet_02;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +24,8 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
     TextView tv_startActivityQuote, tv_startActivityAuthor;
     Button btn_startActivityPass;
+    ToggleButton tb_startActivityPinUnpin;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,54 @@ public class MainActivity extends AppCompatActivity {
         tv_startActivityQuote = findViewById(R.id.tv_startActivityQuote);
         tv_startActivityAuthor = findViewById(R.id.tv_startActivityAuthor);
         btn_startActivityPass = findViewById(R.id.btn_startActivityPass);
+        tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
 
+        sharedPreferences = getSharedPreferences("pinned_quote", MODE_PRIVATE);
+
+        String quote = sharedPreferences.getString("quote", null);
+
+        if (quote == null) {
+            getRandomQuote();
+        } else {
+            String author = sharedPreferences.getString("author", null);
+
+            tv_startActivityQuote.setText(quote);
+            tv_startActivityAuthor.setText(author);
+
+            tb_startActivityPinUnpin.setChecked(true);
+        }
+
+        tb_startActivityPinUnpin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                /*
+                checked -> PIN
+                unchecked -> Unpin
+                 */
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if(b) {
+                    editor.putString("quote", tv_startActivityQuote.getText().toString());
+                    editor.putString("author", tv_startActivityAuthor.getText().toString());
+                    //Store quote somewhere
+                    //the quote is pinned
+                } else {
+                    editor.putString("quote", null);
+                    editor.putString("author", null);
+                    getRandomQuote();
+                    //remove the stored quote
+                    //The quote is unpinned
+                }
+                editor.commit();
+            }
+        });
+
+        btn_startActivityPass.setOnClickListener(v -> {
+            finish();
+        });
+
+    }
+
+    private void getRandomQuote() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://dummyjson.com/quotes/random";
@@ -52,10 +105,5 @@ public class MainActivity extends AppCompatActivity {
         });
         // Add the request to the RequestQueue.
         queue.add(jsonObjectRequest);
-
-        btn_startActivityPass.setOnClickListener(v -> {
-            finish();
-        });
-
     }
 }
