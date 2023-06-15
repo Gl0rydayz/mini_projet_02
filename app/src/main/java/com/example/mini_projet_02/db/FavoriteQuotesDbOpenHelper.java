@@ -50,6 +50,16 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
         db.insert(FavoriteQuotesContract.info.TABLE_NAME, null, values);
     }
 
+    public void delete(int id) {
+        SQLiteDatabase db = FavoriteQuotesDbOpenHelper.this.getWritableDatabase();
+
+        String selection = FavoriteQuotesContract.info.COLUMN_NAME_ID + " = ?";
+
+        String[] selectionArgs = {Integer.toString(id)};
+
+        db.delete(FavoriteQuotesContract.info.TABLE_NAME, selection, selectionArgs);
+    }
+
     public void getAll() {
         SQLiteDatabase db = FavoriteQuotesDbOpenHelper.this.getReadableDatabase();
 

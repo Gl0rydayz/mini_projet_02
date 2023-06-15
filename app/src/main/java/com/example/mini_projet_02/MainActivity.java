@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         db.add(1, "aa", "bb");
         db.add(2, "aa", "kk");
 
+        db.delete(20);
+
         db.getAll();
         //endregion
 
