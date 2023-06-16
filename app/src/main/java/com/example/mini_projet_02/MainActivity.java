@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -19,9 +20,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mini_projet_02.db.FavoriteQuotesDbOpenHelper;
+import com.example.mini_projet_02.models.Quote;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     TextView tv_startActivityQuote, tv_startActivityAuthor;
@@ -45,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
         //region Pin Unpin Quote
         sharedPreferences = getSharedPreferences("pinned_quote", MODE_PRIVATE);
 
-        String quote = sharedPreferences.getString("quote", null);
+        String pinnedQuote = sharedPreferences.getString("quote", null);
 
-        if (quote == null) {
+        if (pinnedQuote == null) {
             getRandomQuote();
         } else {
             String author = sharedPreferences.getString("author", null);
 
-            tv_startActivityQuote.setText(quote);
+            tv_startActivityQuote.setText(pinnedQuote);
             tv_startActivityAuthor.setText(author);
 
             tb_startActivityPinUnpin.setChecked(true);
@@ -96,12 +100,17 @@ public class MainActivity extends AppCompatActivity {
 
         //region Test db
         FavoriteQuotesDbOpenHelper db = new FavoriteQuotesDbOpenHelper(this);
-        db.add(1, "aa", "bb");
-        db.add(2, "aa", "kk");
+//        db.add(new Quote(1, "aa", "bb"));
+//        db.add(new Quote(2, "aa", "kk"));
 
-        db.delete(20);
+        db.delete(2);
 
-        db.getAll();
+        ArrayList<Quote> quotes = db.getAll();
+
+        for (Quote quote :
+                quotes) {
+            Log.e("SQLite", quote.toString());
+        }
         //endregion
 
         btn_startActivityPass.setOnClickListener(v -> {

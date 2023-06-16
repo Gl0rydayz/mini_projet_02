@@ -10,6 +10,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.mini_projet_02.models.Quote;
+
+import java.util.ArrayList;
+
 public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Quotes.db";
@@ -39,7 +43,7 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void add(int id, String quote, String author) {
+    private void add(int id, String quote, String author) {
         SQLiteDatabase db = FavoriteQuotesDbOpenHelper.this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -48,6 +52,10 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
         values.put(FavoriteQuotesContract.info.COLUMN_NAME_AUTHOR, author);
 
         db.insert(FavoriteQuotesContract.info.TABLE_NAME, null, values);
+    }
+
+    public void add(Quote quote) {
+        add(quote.getId(), quote.getQuote(), quote.getAuthor());
     }
 
     public void delete(int id) {
@@ -60,7 +68,8 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
         db.delete(FavoriteQuotesContract.info.TABLE_NAME, selection, selectionArgs);
     }
 
-    public void getAll() {
+    public ArrayList<Quote> getAll() {
+        ArrayList<Quote> quotes = new ArrayList<>();
         SQLiteDatabase db = FavoriteQuotesDbOpenHelper.this.getReadableDatabase();
 
         String[] projection = {
@@ -86,8 +95,11 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
                     cursor.getColumnIndexOrThrow(FavoriteQuotesContract.info.COLUMN_NAME_QUOTE));
             String author = cursor.getString(
                     cursor.getColumnIndexOrThrow(FavoriteQuotesContract.info.COLUMN_NAME_AUTHOR));
-            Log.e("SQLite", String.format("%d %s %s", id, quote, author));
+
+            quotes.add(new Quote(id, quote, author));
         }
         cursor.close();
+
+        return quotes;
     }
 }
