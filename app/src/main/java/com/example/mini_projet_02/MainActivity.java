@@ -28,29 +28,61 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
+    //region Declare Attributes
     TextView tv_startActivityQuote, tv_startActivityAuthor;
     Button btn_startActivityPass;
     ToggleButton tb_startActivityPinUnpin;
     SharedPreferences sharedPreferences;
     Spinner spinner_startActivityColors;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //region Initialize Attributes
         tv_startActivityQuote = findViewById(R.id.tv_startActivityQuote);
         tv_startActivityAuthor = findViewById(R.id.tv_startActivityAuthor);
         btn_startActivityPass = findViewById(R.id.btn_startActivityPass);
         tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
         spinner_startActivityColors = findViewById(R.id.spinner_startActivityColors);
+        //endregion
 
         sharedPreferences = getSharedPreferences("pinned_quote", MODE_PRIVATE);
 
+        ArrayList<String> colors = new ArrayList<>(Arrays.asList("Default", "LightSalmon", "Plum", "PaleGreen", "CornflowerBlue"));
+        ArrayList<String> colorsHex = new ArrayList<>(Arrays.asList("#FFFFFF", "#FFA07A", "#DDA0DD", "#98FB98", "#6495ED"));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, colors);
+
+        spinner_startActivityColors.setAdapter(adapter);
+
+        int bgColorPosition = sharedPreferences.getInt("bgColorPosition", 0);
+        if (bgColorPosition != 0) {
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor(colorsHex.get(bgColorPosition)));
+            spinner_startActivityColors.setSelection(bgColorPosition, true);
+        }
+
+        spinner_startActivityColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int i, long id) {
+                String backgroundColor = colorsHex.get(i);
+                getWindow().getDecorView().setBackgroundColor(Color.parseColor(backgroundColor));
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("bgColorPosition", i);
+                editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        //region Pin or Unpin Quote
         String quote = sharedPreferences.getString("quote", null);
-        int defaultColor = Color.WHITE; // Set a default color value
-        int color = sharedPreferences.getInt("color", defaultColor);
-        getWindow().getDecorView().setBackgroundColor(color);
 
         if (quote == null) {
             getRandomQuote();
@@ -86,61 +118,13 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
             }
         });
+        //endregion
 
-        ArrayList<String> colors = new ArrayList<>(Arrays.asList("Default", "LightSalmon", "Plum", "PaleGreen", "CornflowerBlue"));
-        ArrayList<String> colorsHex = new ArrayList<>(Arrays.asList("#FFFFFF", "#FFA07A", "#DDA0DD", "#98FB98", "#6495ED"));
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, colors);
-
-        spinner_startActivityColors.setAdapter(adapter);
-
-        spinner_startActivityColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                int color = Color.parseColor(colorsHex.get(i));
-//                if (colors.get(i).equals("Default")) {
-//                    color = Color.parseColor(colorsHex.get(0));
-//                } else {
-//                    color = Color.parseColor(colorsHex.get(i));
-//                }
-                int color = 0;
-                switch (colors.get(i)){
-                    case "Default" :
-                        color = Color.parseColor(colorsHex.get(0));
-                        break;
-                    case "LightSalmon" :
-                        color = Color.parseColor(colorsHex.get(1));
-                        break;
-                    case "Plum" :
-                        color = Color.parseColor(colorsHex.get(2));
-                        break;
-                    case "PaleGreen" :
-                        color = Color.parseColor(colorsHex.get(3));
-                        break;
-                    case "CornflowerBlue" :
-                        color = Color.parseColor(colorsHex.get(4));
-                        break;
-                }
-
-                getWindow().getDecorView().setBackgroundColor(color);
-
-                int backgroundColor = ((ColorDrawable) getWindow().getDecorView().getBackground()).getColor();
-
-                editor.putInt("color", backgroundColor);
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
+        //region OnBackPress Method
         btn_startActivityPass.setOnClickListener(v -> {
             finish();
         });
+        //endregion
 
     }
 
