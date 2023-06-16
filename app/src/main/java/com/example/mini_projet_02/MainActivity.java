@@ -9,15 +9,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mini_projet_02.db.FavoriteQuotesDbOpenHelper;
 import com.example.mini_projet_02.models.Quote;
@@ -29,13 +26,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    private final static int INVALID_ID = -1;
     TextView tv_startActivityQuote, tv_startActivityAuthor;
     Button btn_startActivityPass;
     ToggleButton tb_startActivityPinUnpin;
     SharedPreferences sharedPreferences;
     ImageView iv_startActivityFavourite;
     TextView tv_startActivityId;
-    boolean isFavorite = false;
     FavoriteQuotesDbOpenHelper db;
 
     @Override
@@ -50,18 +47,25 @@ public class MainActivity extends AppCompatActivity {
         iv_startActivityFavourite = findViewById(R.id.iv_startActivityFavorite);
         tv_startActivityId = findViewById(R.id.tv_startActivityId);
 
-        //region Pin Unpin Quote
+        //region Persistence Objects
+        db = new FavoriteQuotesDbOpenHelper(this);
         sharedPreferences = getSharedPreferences("pinned_quote", MODE_PRIVATE);
+        //endregion
 
-        String pinnedQuote = sharedPreferences.getString("quote", null);
+        //region Pin Unpin Quote
+        int pinnedQuoteId = sharedPreferences.getInt("id", INVALID_ID);
 
-        if (pinnedQuote == null) {
+        if (pinnedQuoteId == INVALID_ID) {
             getRandomQuote();
         } else {
+            String quote = sharedPreferences.getString("quote", null);
             String author = sharedPreferences.getString("author", null);
 
-            tv_startActivityQuote.setText(pinnedQuote);
+            tv_startActivityId.setText(String.format("#%d", pinnedQuoteId));
+            tv_startActivityQuote.setText(quote);
             tv_startActivityAuthor.setText(author);
+
+            iv_startActivityFavourite.setImageResource(db.isFavorite(pinnedQuoteId) ? R.drawable.like : R.drawable.dislike);
 
             tb_startActivityPinUnpin.setChecked(true);
         }
@@ -75,14 +79,23 @@ public class MainActivity extends AppCompatActivity {
                  */
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (b) {
+                    editor.putInt("id", Integer.parseInt(tv_startActivityId.getText().toString().substring(1)));
                     editor.putString("quote", tv_startActivityQuote.getText().toString());
                     editor.putString("author", tv_startActivityAuthor.getText().toString());
                     //Store quote somewhere
                     //the quote is pinned
+
+                    if(!db.isFavorite(Integer.parseInt(tv_startActivityId.getText().toString().substring(1)))) {
+                        iv_startActivityFavourite.setImageResource(R.drawable.like);
+                        db.add(new Quote(Integer.parseInt(tv_startActivityId.getText().toString().substring(1)),
+                                tv_startActivityQuote.getText().toString(),
+                                tv_startActivityAuthor.getText().toString()));
+                    }
                 } else {
+                    editor.putInt("id", INVALID_ID);
                     editor.putString("quote", null);
                     editor.putString("author", null);
-                    getRandomQuote();
+//                    getRandomQuote();
                     //remove the stored quote
                     //The quote is unpinned
                 }
@@ -93,10 +106,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         //region Like | Dslike Quote
-        db = new FavoriteQuotesDbOpenHelper(this);
         iv_startActivityFavourite.setOnClickListener(v -> {
             int id = Integer.parseInt(tv_startActivityId.getText().toString().substring(1));
+            boolean isFavorite = db.isFavorite(id);
             if (isFavorite) {
+                //Unpin the quote
+                tb_startActivityPinUnpin.setChecked(false);
+
                 iv_startActivityFavourite.setImageResource(R.drawable.dislike);
 
                 db.delete(id);
@@ -106,14 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 String quote = tv_startActivityQuote.getText().toString();
                 String author = tv_startActivityAuthor.getText().toString();
                 db.add(new Quote(id, quote, author));
-            }
-
-            isFavorite = !isFavorite;
-
-            ArrayList<Quote> quotes = db.getAll();
-            for (Quote quote :
-                    quotes) {
-                Log.e("SQLite", quote.toString());
             }
         });
         //endregion
@@ -127,11 +135,10 @@ public class MainActivity extends AppCompatActivity {
     private void getRandomQuote() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-//        String url = "https://dummyjson.com/quotes/random";
+        String url = "https://dummyjson.com/quotes/random";
 
-        // ToDo : delete
-        int range = new Random().nextInt(4) + 1;
-        String url = "https://dummyjson.com/quotes/" + range;
+//        int range = new Random().nextInt(4) + 1;
+//        String url = "https://dummyjson.com/quotes/" + range;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -162,5 +169,10 @@ public class MainActivity extends AppCompatActivity {
         });
         // Add the request to the RequestQueue.
         queue.add(jsonObjectRequest);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
