@@ -102,4 +102,32 @@ public class FavoriteQuotesDbOpenHelper extends SQLiteOpenHelper {
 
         return quotes;
     }
+
+    public boolean isFavorite(int id) {
+        SQLiteDatabase db = FavoriteQuotesDbOpenHelper.this.getReadableDatabase();
+
+        String[] projection = {
+                FavoriteQuotesContract.info.COLUMN_NAME_ID,
+        };
+
+        String selection = FavoriteQuotesContract.info.COLUMN_NAME_ID + " = ?";
+
+        String[] selectionArgs = {Integer.toString(id)};
+
+        Cursor cursor = db.query(
+                FavoriteQuotesContract.info.TABLE_NAME,   // The table to query
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        boolean state = cursor.moveToNext();
+
+        cursor.close();
+
+        return state;
+    }
 }

@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     TextView tv_startActivityQuote, tv_startActivityAuthor;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 unchecked -> Unpin
                  */
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                if(b) {
+                if (b) {
                     editor.putString("quote", tv_startActivityQuote.getText().toString());
                     editor.putString("author", tv_startActivityAuthor.getText().toString());
                     //Store quote somewhere
@@ -126,15 +127,29 @@ public class MainActivity extends AppCompatActivity {
     private void getRandomQuote() {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://dummyjson.com/quotes/random";
+//        String url = "https://dummyjson.com/quotes/random";
+
+        // ToDo : delete
+        int range = new Random().nextInt(4) + 1;
+        String url = "https://dummyjson.com/quotes/" + range;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    tv_startActivityQuote.setText(response.getString("quote"));
-                    tv_startActivityAuthor.setText(response.getString("author"));
-                    tv_startActivityId.setText("#" + response.getString("id"));
+                    int id = response.getInt("id");
+                    String quote = response.getString("quote");
+                    String author = response.getString("author");
+
+                    if(db.isFavorite(id)) {
+                        iv_startActivityFavourite.setImageResource(R.drawable.like);
+                    } else {
+                        iv_startActivityFavourite.setImageResource(R.drawable.dislike);
+                    }
+
+                    tv_startActivityQuote.setText(quote);
+                    tv_startActivityAuthor.setText(author);
+                    tv_startActivityId.setText("#" + id);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
