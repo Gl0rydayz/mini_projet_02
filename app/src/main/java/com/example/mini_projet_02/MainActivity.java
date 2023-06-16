@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
     ToggleButton tb_startActivityPinUnpin;
     SharedPreferences sharedPreferences;
     ImageView iv_startActivityFavourite;
+    TextView tv_startActivityId;
     boolean isFavorite = false;
+    FavoriteQuotesDbOpenHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         btn_startActivityPass = findViewById(R.id.btn_startActivityPass);
         tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
         iv_startActivityFavourite = findViewById(R.id.iv_startActivityFavorite);
+        tv_startActivityId = findViewById(R.id.tv_startActivityId);
 
         //region Pin Unpin Quote
         sharedPreferences = getSharedPreferences("pinned_quote", MODE_PRIVATE);
@@ -88,29 +91,30 @@ public class MainActivity extends AppCompatActivity {
         //endregion
 
 
+        //region Like | Dslike Quote
+        db = new FavoriteQuotesDbOpenHelper(this);
         iv_startActivityFavourite.setOnClickListener(v -> {
+            int id = Integer.parseInt(tv_startActivityId.getText().toString().substring(1));
             if (isFavorite) {
                 iv_startActivityFavourite.setImageResource(R.drawable.dislike);
+
+                db.delete(id);
             } else {
                 iv_startActivityFavourite.setImageResource(R.drawable.like);
+
+                String quote = tv_startActivityQuote.getText().toString();
+                String author = tv_startActivityAuthor.getText().toString();
+                db.add(new Quote(id, quote, author));
             }
 
             isFavorite = !isFavorite;
+
+            ArrayList<Quote> quotes = db.getAll();
+            for (Quote quote :
+                    quotes) {
+                Log.e("SQLite", quote.toString());
+            }
         });
-
-        //region Test db
-        FavoriteQuotesDbOpenHelper db = new FavoriteQuotesDbOpenHelper(this);
-//        db.add(new Quote(1, "aa", "bb"));
-//        db.add(new Quote(2, "aa", "kk"));
-
-        db.delete(2);
-
-        ArrayList<Quote> quotes = db.getAll();
-
-        for (Quote quote :
-                quotes) {
-            Log.e("SQLite", quote.toString());
-        }
         //endregion
 
         btn_startActivityPass.setOnClickListener(v -> {
@@ -130,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     tv_startActivityQuote.setText(response.getString("quote"));
                     tv_startActivityAuthor.setText(response.getString("author"));
+                    tv_startActivityId.setText("#" + response.getString("id"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
