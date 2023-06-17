@@ -40,7 +40,7 @@ public class FavoriteQuotesAdapter extends RecyclerView.Adapter<FavoriteQuotesAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.tv_favQuoteItemInfos.setText(quotes.get(position).toString());
+        holder.tv_favQuoteItemInfos.setText(quotes.get(position).infos());
     }
 
     @Override
