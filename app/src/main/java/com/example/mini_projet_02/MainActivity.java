@@ -2,9 +2,9 @@ package com.example.mini_projet_02;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -22,13 +22,10 @@ import com.example.mini_projet_02.models.Quote;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 public class MainActivity extends AppCompatActivity {
     private final static int INVALID_ID = -1;
     TextView tv_startActivityQuote, tv_startActivityAuthor;
-    Button btn_startActivityPass;
+    Button btn_startActivityShowFQ;
     ToggleButton tb_startActivityPinUnpin;
     SharedPreferences sharedPreferences;
     ImageView iv_startActivityFavourite;
@@ -42,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         tv_startActivityQuote = findViewById(R.id.tv_startActivityQuote);
         tv_startActivityAuthor = findViewById(R.id.tv_startActivityAuthor);
-        btn_startActivityPass = findViewById(R.id.btn_startActivityPass);
+        btn_startActivityShowFQ = findViewById(R.id.btn_startActivityShowFQ);
         tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
         iv_startActivityFavourite = findViewById(R.id.iv_startActivityFavorite);
         tv_startActivityId = findViewById(R.id.tv_startActivityId);
@@ -126,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
         });
         //endregion
 
-        btn_startActivityPass.setOnClickListener(v -> {
-            finish();
+        btn_startActivityShowFQ.setOnClickListener(v -> {
+            startActivity(new Intent(this, AllFavoriteQuotesActivity.class));
         });
 
     }
