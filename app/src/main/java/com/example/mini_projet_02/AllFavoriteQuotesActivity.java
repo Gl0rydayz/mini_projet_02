@@ -1,6 +1,7 @@
 package com.example.mini_projet_02;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +28,6 @@ public class AllFavoriteQuotesActivity extends AppCompatActivity {
 
         FavoriteQuotesAdapter favoriteQuotesAdapter = new FavoriteQuotesAdapter(db.getAll());
         rv_allFavoriteQuotes.setAdapter(favoriteQuotesAdapter);
-        rv_allFavoriteQuotes.setLayoutManager(new LinearLayoutManager(this));
+        rv_allFavoriteQuotes.setLayoutManager(new GridLayoutManager(this, 2));
     }
 }
