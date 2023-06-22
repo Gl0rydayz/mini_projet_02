@@ -139,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
 
         registerForContextMenu(iv_startActivityColorLens);
 
+        iv_startActivityColorLens.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openContextMenu(view);
+            }
+        });
+
     }
 
     @Override
