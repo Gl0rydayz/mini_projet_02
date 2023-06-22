@@ -148,13 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private int selectedColorPosition = -1;
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle("Colors");
         String[] colorNames = getResources().getStringArray(R.array.color_names);
         for (int i = 0; i < colorNames.length; i++) {
-            menu.add(0, i, 0, colorNames[i]);
+            MenuItem menuItem = menu.add(0, i, 0, colorNames[i]);
+            if(i == selectedColorPosition) {
+                menuItem.setEnabled(false);
+            }
         }
     }
 
@@ -166,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
         if (itemId >= 0 && itemId < colorCodes.length) {
             String selectedColorCode = colorCodes[itemId];
             getWindow().getDecorView().setBackgroundColor(Color.parseColor(selectedColorCode));
+
+            // Update the selected color position and invalidate the context menu
+            selectedColorPosition = itemId;
+            invalidateOptionsMenu();
         }
         return true;
     }
