@@ -1,10 +1,18 @@
 package com.example.mini_projet_02;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView iv_startActivityFavourite;
     TextView tv_startActivityId;
     FavoriteQuotesDbOpenHelper db;
+    ImageView iv_startActivityColorLens;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
         iv_startActivityFavourite = findViewById(R.id.iv_startActivityFavorite);
         tv_startActivityId = findViewById(R.id.tv_startActivityId);
+        iv_startActivityColorLens = findViewById(R.id.iv_startActivityColorLens);
 
         //region Persistence Objects
         db = new FavoriteQuotesDbOpenHelper(this);
@@ -127,6 +137,30 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, AllFavoriteQuotesActivity.class));
         });
 
+        registerForContextMenu(iv_startActivityColorLens);
+
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Colors");
+        String[] colorNames = getResources().getStringArray(R.array.color_names);
+        for (int i = 0; i < colorNames.length; i++) {
+            menu.add(0, i, 0, colorNames[i]);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        String[] colorCodes = getResources().getStringArray(R.array.color_codes);
+        String[] colorNames = getResources().getStringArray(R.array.color_names);
+        int itemId = item.getItemId();
+        if (itemId >= 0 && itemId < colorCodes.length) {
+            String selectedColorCode = colorCodes[itemId];
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor(selectedColorCode));
+        }
+        return true;
     }
 
     private void getRandomQuote() {
