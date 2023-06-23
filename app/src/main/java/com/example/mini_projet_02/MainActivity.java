@@ -142,17 +142,24 @@ public class MainActivity extends AppCompatActivity {
         //region Handle Colors Spinner
         colorsAndSettingDbOpenHelper = new ColorsAndSettingDbOpenHelper(this);
 
-        ArrayList<String > colors  = new ArrayList<>(Arrays.asList("Default", "LightSalmon", "Pulm", "PaleGreen", "CornflowerBlue"));
+        ArrayList<String > colorsNames  = new ArrayList<>(Arrays.asList("Default", "LightSalmon", "Pulm", "PaleGreen", "CornflowerBlue"));
+        ArrayList<String > colorsCodes  = new ArrayList<>(Arrays.asList("#FFFBFE", "#FFA07A", "#DDA0DD", "#98FB98", "#6495ED"));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, colors);
-        spinner_startActivityColors.setAdapter(adapter);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, colorsNames);
+        spinner_startActivityColors.setAdapter(new SpinnerAdapter(this, colorsNames, colorsCodes ));
+
+        for (int i = 0; i < colorsNames.size(); i++) {
+            String colorName = colorsNames.get(i);
+            String colorValue = colorsCodes.get(i);
+            colorsAndSettingDbOpenHelper.addColor(colorName, colorValue);
+        }
 
         spinner_startActivityColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i){
                     case 0:
-                        color = new Color( "Default", "#FFFFFF");
+                        color = new Color( "Default", "#FFFBFE");
                         colorsAndSettingDbOpenHelper.addSetting(color);
                         getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#FFFFFF"));
                         break;
