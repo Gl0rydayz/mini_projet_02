@@ -2,10 +2,7 @@ package com.example.mini_projet_02;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -139,16 +136,13 @@ public class MainActivity extends AppCompatActivity {
 
         registerForContextMenu(iv_startActivityColorLens);
 
-        iv_startActivityColorLens.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openContextMenu(view);
-            }
+        iv_startActivityColorLens.setOnClickListener(v -> {
+            openContextMenu(v);
         });
 
     }
 
-    private int selectedColorPosition = -1;
+    private int selectedPosition = -1;
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -156,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         String[] colorNames = getResources().getStringArray(R.array.color_names);
         for (int i = 0; i < colorNames.length; i++) {
             MenuItem menuItem = menu.add(0, i, 0, colorNames[i]);
-            if(i == selectedColorPosition) {
+            if(i == selectedPosition) {
                 menuItem.setEnabled(false);
             }
         }
@@ -165,14 +159,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         String[] colorCodes = getResources().getStringArray(R.array.color_codes);
-        String[] colorNames = getResources().getStringArray(R.array.color_names);
         int itemId = item.getItemId();
         if (itemId >= 0 && itemId < colorCodes.length) {
-            String selectedColorCode = colorCodes[itemId];
-            getWindow().getDecorView().setBackgroundColor(Color.parseColor(selectedColorCode));
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor(colorCodes[itemId]));
 
-            // Update the selected color position and invalidate the context menu
-            selectedColorPosition = itemId;
+            selectedPosition = itemId;
             invalidateOptionsMenu();
         }
         return true;
