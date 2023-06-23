@@ -139,11 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
         registerForContextMenu(iv_startActivityColorLens);
 
-        iv_startActivityColorLens.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openContextMenu(view);
-            }
+        iv_startActivityColorLens.setOnClickListener(v -> {
+            openContextMenu(v);
         });
 
     }
@@ -161,11 +158,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         String[] colorCodes = getResources().getStringArray(R.array.color_codes);
-        String[] colorNames = getResources().getStringArray(R.array.color_names);
         int itemId = item.getItemId();
         if (itemId >= 0 && itemId < colorCodes.length) {
-            String selectedColorCode = colorCodes[itemId];
-            getWindow().getDecorView().setBackgroundColor(Color.parseColor(selectedColorCode));
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor(colorCodes[itemId]));
         }
         return true;
     }
