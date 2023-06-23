@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -16,14 +19,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mini_projet_02.db.ColorsAndSettingDbOpenHelper;
 import com.example.mini_projet_02.db.FavoriteQuotesDbOpenHelper;
+import com.example.mini_projet_02.models.Color;
 import com.example.mini_projet_02.models.Quote;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private final static int INVALID_ID = -1;
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     ImageView iv_startActivityFavourite;
     TextView tv_startActivityId;
     FavoriteQuotesDbOpenHelper db;
+    Spinner spinner_startActivityColors;
+    ColorsAndSettingDbOpenHelper colorsAndSettingDbOpenHelper;
+    Color color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         tb_startActivityPinUnpin = findViewById(R.id.tb_startActivityPinUnpin);
         iv_startActivityFavourite = findViewById(R.id.iv_startActivityFavorite);
         tv_startActivityId = findViewById(R.id.tv_startActivityId);
+        spinner_startActivityColors = findViewById(R.id.spinner_startActivityColors);
 
         //region Persistence Objects
         db = new FavoriteQuotesDbOpenHelper(this);
@@ -130,6 +139,52 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
+        //region Handle Colors Spinner
+        colorsAndSettingDbOpenHelper = new ColorsAndSettingDbOpenHelper(this);
+
+        ArrayList<String > colors  = new ArrayList<>(Arrays.asList("Default", "LightSalmon", "Pulm", "PaleGreen", "CornflowerBlue"));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, colors);
+        spinner_startActivityColors.setAdapter(adapter);
+
+        spinner_startActivityColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        color = new Color( "Default", "#FFFFFF");
+                        colorsAndSettingDbOpenHelper.addSetting(color);
+                        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#FFFFFF"));
+                        break;
+                    case 1:
+                        color = new Color( "LightSalmon", "#FFA07A");
+                        colorsAndSettingDbOpenHelper.addSetting(color);
+                        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#FFA07A"));
+                        break;
+                    case 2:
+                        color = new Color( "Plum", "#DDA0DD");
+                        colorsAndSettingDbOpenHelper.addSetting(color);
+                        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#DDA0DD"));
+                        break;
+                    case 3:
+                        color = new Color( "PaleGreen", "#98FB98");
+                        colorsAndSettingDbOpenHelper.addSetting(color);
+                        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#98FB98"));
+                        break;
+                    case 4:
+                        color = new Color( "CornflowerBlue", "#6495ED");
+                        colorsAndSettingDbOpenHelper.addSetting(color);
+                        getWindow().getDecorView().setBackgroundColor(android.graphics.Color.parseColor("#6495ED"));
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //endregion
     }
 
     private void getRandomQuote() {

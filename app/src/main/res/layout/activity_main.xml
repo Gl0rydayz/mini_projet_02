@@ -80,4 +80,13 @@
         app:layout_constraintEnd_toEndOf="@+id/tv_startActivityQuote"
         app:layout_constraintStart_toStartOf="@+id/tv_startActivityQuote" />
 
+    <Spinner
+        android:id="@+id/spinner_startActivityColors"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tb_startActivityPinUnpin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tb_startActivityPinUnpin" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
